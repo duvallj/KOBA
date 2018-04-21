@@ -1,6 +1,5 @@
 import sys, time
 
-print("\033c")
 
 def terminal_size():
     import fcntl, termios, struct
@@ -9,16 +8,38 @@ def terminal_size():
         struct.pack('HHHH', 0, 0, 0, 0)))
     return w, h
 
-def error(text = ""):
+verbose = False
+force  = False
+simple = False
+quantum = False
+
+if "-v" in sys.argv:
+	verbose = True
+	sys.argv.remove("-v")
+if "-f" in sys.argv:
+	force = True
+	sys.argv.remove("-f")
+if "-s" in sys.argv:
+	simple = True
+	sys.argv.remove("-s")
+if "-q" in sys.argv:
+	quantum = True
+	sys.argv.remove("-q")
+
+if not simple:
+	print("\033c")
+
+def error(text=None):
 	print("\n")
 	if verbose:
 		if simple:
-			print("!!ERROR: " + text)
+			if text:
+				print("!!ERROR: " + text)
 			print("Usage: python assemble.py <input file> <output file> [options,]")
 			print("Help:  python assemble.py --help")
 		else:
 			print("╔" + ("═" * (terminal_size()[0] - 2)) + "╗")
-			if text != "":
+			if text:
 				text = "╟╼━ Error: " + text
 				print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
 			text = "╟╼━ Usage: python assemble.py <input file> <output file> [options,]"
@@ -42,21 +63,6 @@ if len(sys.argv) > 1:
 
 if len(sys.argv) < 3:
 	error()
-
-verbose = False
-force  = False
-simple = False
-quantum = False
-
-if len(sys.argv) > 3:
-	if "-v" in sys.argv:
-		verbose = True
-	if "-f" in sys.argv:
-		force = True
-	if "-s" in sys.argv:
-		simple = True
-	if "-q" in sys.argv:
-		quantum = True
 
 infile = sys.argv[1]
 
