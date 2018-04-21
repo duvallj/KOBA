@@ -159,7 +159,7 @@ jump_if_equal = Instruction(
 )
 
 jump_if_less = Instruction(
-    opcode   = "jie",
+    opcode   = "jil",
     bit_mask = 0b11111111,
     bit_id   = 0b10101100,
     bit_mapping = {}
