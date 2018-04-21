@@ -10,15 +10,18 @@ def terminal_size():
     return w, h
 
 def error(text = ""):
-	print("╔" + ("═" * (terminal_size()[0] - 2)) + "╗")
-	if text != "":
-		text = "╟╼━ Error: " + text
+	if verbose:
+		print("╔" + ("═" * (terminal_size()[0] - 2)) + "╗")
+		if text != "":
+			text = "╟╼━ Error: " + text
+			print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
+		text = "╟╼━ Usage: python assemble.py <input file> <output file> [options,]"
 		print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
-	text = "╟╼━ Usage: python assemble.py <input file> <output file> [options,]"
-	print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
-	text = "╟╼━ Help:  python assemble.py --help"
-	print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
-	print("╚" + ("═" * (terminal_size()[0] - 2)) + "╝")
+		text = "╟╼━ Help:  python assemble.py --help"
+		print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
+		print("╚" + ("═" * (terminal_size()[0] - 2)) + "╝")
+	else:
+		print("An error was encountered. Run with -v for verbose output")
 	exit()
 
 if len(sys.argv) > 1:
@@ -76,14 +79,14 @@ time.sleep(0.5)
 print("◉  ON" if quantum else "◎  OFF")
 time.sleep(0.2)
 
-
-print("\nReading file " + infile, end=" ", flush=True)
-time.sleep(0.5)
-print(".", end="", flush=True)
-time.sleep(0.5)
-print(".", end="", flush=True)
-time.sleep(0.8)
-print(".")
+if verbose:
+	print("\nReading file " + infile, end=" ", flush=True)
+	time.sleep(0.5)
+	print(".", end="", flush=True)
+	time.sleep(0.5)
+	print(".", end="", flush=True)
+	time.sleep(0.8)
+	print(".")
 
 try:
 	with open(infile) as file:
@@ -97,9 +100,9 @@ if len(lines) == 0:
 
 time.sleep(0.5)
 
-print("Done.\n")
-
-print("Assembling file...")
+if verbose:
+	print("Done.\n")
+	print("Assembling file...")
 
 def progress_bar(lines):
 	line = 0
@@ -128,13 +131,15 @@ outfile = sys.argv[2]
 
 next(bar)  #for that sweet, sweet 100%
 time.sleep(0.5)
-print("\n\nSaving output to " + outfile, end=" ", flush=True)
-time.sleep(0.3)
-print(".", end="", flush=True)
-time.sleep(0.3)
-print(".", end="", flush=True)
-time.sleep(0.5)
-print(".")
+
+if verbose:
+	print("\n\nSaving output to " + outfile, end=" ", flush=True)
+	time.sleep(0.3)
+	print(".", end="", flush=True)
+	time.sleep(0.3)
+	print(".", end="", flush=True)
+	time.sleep(0.5)
+	print(".")
 
 if force:
 	with open(outfile, "w") as output:
