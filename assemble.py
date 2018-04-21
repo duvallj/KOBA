@@ -2,11 +2,23 @@ import sys, time
 
 print("\033c")
 
+def terminal_size():
+    import fcntl, termios, struct
+    h, w, hp, wp = struct.unpack('HHHH',
+        fcntl.ioctl(0, termios.TIOCGWINSZ,
+        struct.pack('HHHH', 0, 0, 0, 0)))
+    return w, h
+
 def error(text = ""):
+	print("╔" + ("═" * (terminal_size()[0] - 2)) + "╗")
 	if text != "":
-		print("Error: " + text)
-	print("Usage: python assemble.py <input file> <output file> [options,]")
-	print("Help:  python assemble.py --help")
+		text = "╟╼━ Error: " + text
+		print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
+	text = "╟╼━ Usage: python assemble.py <input file> <output file> [options,]"
+	print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
+	text = "╟╼━ Help:  python assemble.py --help"
+	print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
+	print("╚" + ("═" * (terminal_size()[0] - 2)) + "╝")
 	exit()
 
 if len(sys.argv) > 1:
@@ -35,22 +47,18 @@ if len(sys.argv) > 3:
 
 infile = sys.argv[1]
 
-def terminal_size():
-    import fcntl, termios, struct
-    h, w, hp, wp = struct.unpack('HHHH',
-        fcntl.ioctl(0, termios.TIOCGWINSZ,
-        struct.pack('HHHH', 0, 0, 0, 0)))
-    return w, h
 
 time.sleep(0.5)
 
 if terminal_size()[0] < 60:
-	print("Welcom to the: \n KIND OF BAD ASSEMBLER")
+	print("Welcome to the: \n KIND OF BAD ASSEMBLER")
 else:
-	print((((terminal_size()[0] - 8) // 2) * " ") + "Welcome to the: \n" + 
+	print(
+		(((terminal_size()[0] - 8) // 2) * " ") + "Welcome to the: \n" + 
 		(((terminal_size()[0] - 58) // 2) * " ") + "╦╔═┬┌┐┌┌┬┐  ╔═╗┌─┐  ╔╗ ┌─┐┌┬┐  ╔═╗┌─┐┌─┐┌─┐┌┬┐┌┐ ┬  ┌─┐┬─┐\n" + 
 		(((terminal_size()[0] - 58) // 2) * " ") + "╠╩╗││││ ││  ║ ║├┤   ╠╩╗├─┤ ││  ╠═╣└─┐└─┐├┤ │││├┴┐│  ├┤ ├┬┘\n" + 
 		(((terminal_size()[0] - 58) // 2) * " ") + "╩ ╩┴┘└┘─┴┘  ╚═╝└    ╚═╝┴ ┴─┴┘  ╩ ╩└─┘└─┘└─┘┴ ┴└─┘┴─┘└─┘┴└─\n\n")
+
 time.sleep(0.5)
 
 print("You've selected the following options")
@@ -69,7 +77,7 @@ print("◉  ON" if quantum else "◎  OFF")
 time.sleep(0.2)
 
 
-print("Reading file " + infile, end=" ", flush=True)
+print("\nReading file " + infile, end=" ", flush=True)
 time.sleep(0.5)
 print(".", end="", flush=True)
 time.sleep(0.5)
@@ -105,12 +113,37 @@ def progress_bar(lines):
 
 
 bar = progress_bar(len(lines))
+out = []
+
+def process(line):
+	return line #TODO: actual stuff
+
 for line in lines:
 	next(bar)  #progress bar, prettty
+	out.append(process(line))
 	if quantum:
 		time.sleep(0.5)
 
+outfile = sys.argv[2]
 
-# cleanup
 next(bar)  #for that sweet, sweet 100%
+time.sleep(0.5)
+print("\n\nSaving output to " + outfile, end=" ", flush=True)
+time.sleep(0.3)
+print(".", end="", flush=True)
+time.sleep(0.3)
+print(".", end="", flush=True)
+time.sleep(0.5)
+print(".")
+
+if force:
+	with open(outfile, "w") as output:
+		output.write("\n".join(out))
+else:
+	try:
+		with open(outfile, "x") as output:
+			output.write("\n".join(out))
+	except FileExistsError:
+		error(text="Ouput file " + outfile + " already exists. If you want to overwrite it, use -f")
+
 print()
