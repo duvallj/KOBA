@@ -72,28 +72,47 @@ alu_math = Instruction(
         'ma1':      0b1111,
     }
 )
-
+"""                  Registers!
+Code    |   Name            |   (R)ead/(W)rite/(B)oth       |   Number
+--------|-------------------|-------------------------------|--------------
+AIA     | ALU Input A       |               W               |   0 / 0b0000
+AIB     | ALU Input B       |               W               |   1 / 0b0001
+AOR     | ALU Output        |               R               |   2 / 0b0010
+ABRA    | Addr Bus Reg A-LSB|               W               |   3 / 0b0011
+ABRB    | Addr Bus Reg B-MSB|               W               |   4 / 0b0100
+CRA     | Cache Register A  |               B               |   5 / 0b0101
+CRB     | Cache Register B  |               B               |   6 / 0b0110
+CRC     | Cache Register C  |               B               |   7 / 0b0111
+CRD     | Cache Register D  |               B               |   8 / 0b1000
+NULA    | Null Register A   |              N/A              |   9 / 0b1001
+NULB    | Null Register B   |              N/A              |  10 / 0b1010
+NULC    | Null Register C   |              N/A              |  11 / 0b1011
+NULD    | Null Register D   |              N/A              |  12 / 0b1100
+NULE    | Null Register E   |              N/A              |  13 / 0b1101
+NULF    | Null Register F   |              N/A              |  14 / 0b1110
+BLCK    | Blockchain Reg    |               B               |  15 / 0b1111
+"""
 read_reg = Instruction(
     opcode   = "rreg",
     bit_mask = 0b11110000,
     bit_id   = 0b10000000,
     bit_mapping = {
-        '0': 0b0000,
-        '1': 0b0001,
-        '2': 0b0010,
-        '3': 0b0011,
-        '4': 0b0100,
-        '5': 0b0101,
-        '6': 0b0110,
-        '7': 0b0111,
-        '8': 0b1000,
-        '9': 0b1001,
-        'a': 0b1010,
-        'b': 0b1011,
-        'c': 0b1100,
-        'd': 0b1101,
-        'e': 0b1110,
-        'f': 0b1111,
+        'AIA':  0b0000,
+        'AIB':  0b0001,
+        'AOR':  0b0010,
+        'ABRA': 0b0011,
+        'ABRB': 0b0100,
+        'CRA':  0b0101,
+        'CRB':  0b0110,
+        'CRC':  0b0111,
+        'CRD':  0b1000,
+        'NULA': 0b1001,
+        'NULB': 0b1010,
+        'NULC': 0b1011,
+        'NULD': 0b1100,
+        'NULE': 0b1101,
+        'NULF': 0b1110,
+        'BLCK': 0b1111,
     }
 )
 
@@ -102,22 +121,22 @@ write_reg = Instruction(
     bit_mask = 0b11110000,
     bit_id   = 0b01000000,
     bit_mapping = {
-        '0': 0b0000,
-        '1': 0b0001,
-        '2': 0b0010,
-        '3': 0b0011,
-        '4': 0b0100,
-        '5': 0b0101,
-        '6': 0b0110,
-        '7': 0b0111,
-        '8': 0b1000,
-        '9': 0b1001,
-        'a': 0b1010,
-        'b': 0b1011,
-        'c': 0b1100,
-        'd': 0b1101,
-        'e': 0b1110,
-        'f': 0b1111,
+        'AIA':  0b0000,
+        'AIB':  0b0001,
+        'AOR':  0b0010,
+        'ABRA': 0b0011,
+        'ABRB': 0b0100,
+        'CRA':  0b0101,
+        'CRB':  0b0110,
+        'CRC':  0b0111,
+        'CRD':  0b1000,
+        'NULA': 0b1001,
+        'NULB': 0b1010,
+        'NULC': 0b1011,
+        'NULD': 0b1100,
+        'NULE': 0b1101,
+        'NULF': 0b1110,
+        'BLCK': 0b1111,
     }
 )
 
