@@ -10,16 +10,22 @@ def terminal_size():
     return w, h
 
 def error(text = ""):
+	print("\n")
 	if verbose:
-		print("╔" + ("═" * (terminal_size()[0] - 2)) + "╗")
-		if text != "":
-			text = "╟╼━ Error: " + text
+		if simple:
+			print("!!ERROR: " + text)
+			print("Usage: python assemble.py <input file> <output file> [options,]")
+			print("Help:  python assemble.py --help")
+		else:
+			print("╔" + ("═" * (terminal_size()[0] - 2)) + "╗")
+			if text != "":
+				text = "╟╼━ Error: " + text
+				print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
+			text = "╟╼━ Usage: python assemble.py <input file> <output file> [options,]"
 			print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
-		text = "╟╼━ Usage: python assemble.py <input file> <output file> [options,]"
-		print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
-		text = "╟╼━ Help:  python assemble.py --help"
-		print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
-		print("╚" + ("═" * (terminal_size()[0] - 2)) + "╝")
+			text = "╟╼━ Help:  python assemble.py --help"
+			print(text + (" " * (terminal_size()[0] - len(text) - 1)) + "║")
+			print("╚" + ("═" * (terminal_size()[0] - 2)) + "╝")
 	else:
 		print("An error was encountered. Run with -v for verbose output")
 	exit()
@@ -30,6 +36,7 @@ if len(sys.argv) > 1:
 		print("Options: ")
 		print("			-v : verbose")
 		print("			-f : overwrite output if it already exists")
+		print("			-s : simple mode")
 		print("			-q : quantum mode")
 		exit()
 
@@ -38,6 +45,7 @@ if len(sys.argv) < 3:
 
 verbose = False
 force  = False
+simple = False
 quantum = False
 
 if len(sys.argv) > 3:
@@ -45,6 +53,8 @@ if len(sys.argv) > 3:
 		verbose = True
 	if "-f" in sys.argv:
 		force = True
+	if "-s" in sys.argv:
+		simple = True
 	if "-q" in sys.argv:
 		quantum = True
 
@@ -53,7 +63,7 @@ infile = sys.argv[1]
 
 time.sleep(0.5)
 
-if terminal_size()[0] < 60:
+if terminal_size()[0] < 60 or simple:
 	print("Welcome to the: \n KIND OF BAD ASSEMBLER")
 else:
 	print(
@@ -65,28 +75,40 @@ else:
 time.sleep(0.5)
 
 print("You've selected the following options")
-time.sleep(0.2)
-print("     Verbose Mode: ", end="", flush=True)
-time.sleep(0.5)
-print("◉  ON" if verbose else "◎  OFF")
-time.sleep(0.2)
-print("   Overwrite Mode: ", end="", flush=True)
-time.sleep(0.5)
-print("◉  ON" if force else "◎  OFF")
-time.sleep(0.2)
-print("     Quantum Mode: ", end="", flush=True)
-time.sleep(0.5)
-print("◉  ON" if quantum else "◎  OFF")
-time.sleep(0.2)
+if simple:
+	print("Verbose: " + str(verbose))
+	print("  Force: " + str(force))
+	print(" Simple: " + str(simple))
+	print("Quantum: " + str(quantum))
+else:	
+	time.sleep(0.2)
+	print("     Verbose Mode: ", end="", flush=True)
+	time.sleep(0.5)
+	print("◉  ON" if verbose else "◎  OFF")
+	time.sleep(0.2)
+	print("   Overwrite Mode: ", end="", flush=True)
+	time.sleep(0.5)
+	print("◉  ON" if force else "◎  OFF")
+	time.sleep(0.2)
+	print("      Simple Mode: ", end="", flush=True)
+	time.sleep(0.5)
+	print("◉  ON" if simple else "◎  OFF")
+	print("     Quantum Mode: ", end="", flush=True)
+	time.sleep(0.5)
+	print("◉  ON" if quantum else "◎  OFF")
+	time.sleep(0.2)
 
 if verbose:
-	print("\nReading file " + infile, end=" ", flush=True)
-	time.sleep(0.5)
-	print(".", end="", flush=True)
-	time.sleep(0.5)
-	print(".", end="", flush=True)
-	time.sleep(0.8)
-	print(".")
+	if simple:
+		print("\nReading file " + infile)
+	else:
+		print("\nReading file " + infile, end=" ", flush=True)
+		time.sleep(0.5)
+		print(".", end="", flush=True)
+		time.sleep(0.5)
+		print(".", end="", flush=True)
+		time.sleep(0.8)
+		print(".")
 
 try:
 	with open(infile) as file:
@@ -109,8 +131,11 @@ def progress_bar(lines):
 	width = terminal_size()[0] / lines  	#width of characters per each line
 	print()
 	while line <= lines:
-		print("\033[F" + (int(line * width) * "█") + ('░' if (int(line * width) < (line * width)) else ''))
-		print(str(int((line / lines) * 100)) + "%", end = "")
+		if simple:
+			print("\r" + str(int((line / lines) * 100)) + "%", end = "")
+		else:
+			print("\033[F" + (int(line * width) * "█") + ('░' if (int(line * width) < (line * width)) else ''))
+			print(str(int((line / lines) * 100)) + "%", end = "")
 		line += 1
 		yield line
 
@@ -133,13 +158,16 @@ next(bar)  #for that sweet, sweet 100%
 time.sleep(0.5)
 
 if verbose:
-	print("\n\nSaving output to " + outfile, end=" ", flush=True)
-	time.sleep(0.3)
-	print(".", end="", flush=True)
-	time.sleep(0.3)
-	print(".", end="", flush=True)
-	time.sleep(0.5)
-	print(".")
+	if simple:
+		print("\n\nSaving output to " + outfile)
+	else:
+		print("\n\nSaving output to " + outfile, end=" ", flush=True)
+		time.sleep(0.3)
+		print(".", end="", flush=True)
+		time.sleep(0.3)
+		print(".", end="", flush=True)
+		time.sleep(0.5)
+		print(".")
 
 if force:
 	with open(outfile, "w") as output:
