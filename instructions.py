@@ -95,7 +95,7 @@ BLCK    | Blockchain Reg    |               B               |  15 / 0b1111
 read_reg = Instruction(
     opcode   = "rreg",
     bit_mask = 0b11110000,
-    bit_id   = 0b10000000,
+    bit_id   = 0b01000000,
     bit_mapping = {
         'AIA':  0b0000,
         'AIB':  0b0001,
@@ -119,7 +119,7 @@ read_reg = Instruction(
 write_reg = Instruction(
     opcode   = "wreg",
     bit_mask = 0b11110000,
-    bit_id   = 0b01000000,
+    bit_id   = 0b10000000,
     bit_mapping = {
         'AIA':  0b0000,
         'AIB':  0b0001,
@@ -217,35 +217,35 @@ write_disp = Instruction(
 read_address = Instruction(
     opcode   = "radr",
     bit_mask = 0b11111111,
-    bit_id   = 0b01111111,
+    bit_id   = 0b00111111,
     bit_mapping = {}
 )
 
 write_address = Instruction(
     opcode   = "wadr",
     bit_mask = 0b11111111,
-    bit_id   = 0b01111110,
+    bit_id   = 0b10111111,
     bit_mapping = {}
 )
 
 jump_unconditional = Instruction(
     opcode   = "jmp",
     bit_mask = 0b11111111,
-    bit_id   = 0b10101001,
+    bit_id   = 0b00101001,
     bit_mapping = {}
 )
 
 jump_if_equal = Instruction(
     opcode   = "jie",
     bit_mask = 0b11111111,
-    bit_id   = 0b10101010,
+    bit_id   = 0b00101010,
     bit_mapping = {}
 )
 
 jump_if_less = Instruction(
     opcode   = "jil",
     bit_mask = 0b11111111,
-    bit_id   = 0b10101100,
+    bit_id   = 0b00101100,
     bit_mapping = {}
 )
 
