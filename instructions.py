@@ -26,7 +26,7 @@ m(2) = subtract 2nd argument from the 1st
 """
 
 alu_l = Instruction(
-    opcode   = "alu_l",     # stands for "logic"
+    opcode   = "logic",
     bit_mask = 0b11110000,
     bit_id   = 0b00010000,
     bit_mapping = {
@@ -50,7 +50,7 @@ alu_l = Instruction(
 )
 
 alu_math = Instruction(
-    opcode   = "alu_m",
+    opcode   = "math",
     bit_mask = 0b11110000,
     bit_id   = 0b00000000,
     bit_mapping = {
