@@ -84,14 +84,15 @@ CRA     | Cache Register A  |               B               |   5 / 0b0101
 CRB     | Cache Register B  |               B               |   6 / 0b0110
 CRC     | Cache Register C  |               B               |   7 / 0b0111
 CRD     | Cache Register D  |               B               |   8 / 0b1000
-NULA    | Null Register A   |              N/A              |   9 / 0b1001
-NULB    | Null Register B   |              N/A              |  10 / 0b1010
+PINA    | Player Input A    |               R               |   9 / 0b1001
+PINB    | Player Input B    |               R               |  10 / 0b1010
 NULC    | Null Register C   |              N/A              |  11 / 0b1011
 NULD    | Null Register D   |              N/A              |  12 / 0b1100
 NULE    | Null Register E   |              N/A              |  13 / 0b1101
 NULF    | Null Register F   |              N/A              |  14 / 0b1110
 BLCK    | Blockchain Reg    |               B               |  15 / 0b1111
 """
+
 read_reg = Instruction(
     opcode   = "rreg",
     bit_mask = 0b11110000,

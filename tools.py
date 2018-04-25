@@ -1,6 +1,9 @@
 from instructions import instructions
 import re
 
+class MalformedDataError(Exception):
+    pass
+
 def parse_literal(lit):
     value = 0
     if lit[:2] == "0x":
@@ -22,7 +25,7 @@ def parse_literal(lit):
 
     return value & 0xFF
 
-line_regex = re.compile("(?P<opcode>[a-zA-Z_\.]+)\[(?P<subcode>[a-zA-Z_\.0-9]+)\]\s*(?P<data>[0-9a-fA-F\-\+@x]+)?")
+line_regex = re.compile("(?P<opcode>[a-zA-Z_\.]+)(\[(?P<subcode>[a-zA-Z_\.0-9]+)\])?\s*(?P<data>[0-9a-fA-F\-\+@x]+)?")
 
 def parse_line(line):
     # Strip all leading and trailing whitespace
@@ -32,34 +35,36 @@ def parse_line(line):
     if match is None:
         # The line is not valid
         # TODO: non-silent error handling
-        return []
+        return None
     
     instr = instructions.get(match.group("opcode"), None)
     if instr is None:
         # There is not an instruction with that opcode
         # Also do error handling here
-        return []
+        return None
 
-    # Fancy trick to return 0 if the bit mapping is empty, but None if the subcode doesn't exist
-    sub = len(instr.bit_mapping) and instr.bit_mapping.get(match.group("subcode"), None)
+    # Fancy trick to return 0 if it doesn't need a subcode,
+    # but None if does and the subcode isn't included/is malformed
+    subcode = match.group("subcode")
+    sub_bits = len(instr.bit_mapping) and subcode and instr.bit_mapping.get(subcode, None)
     if sub is None:
         # Also a malformed instruction
         # need to do error handling like before
-        return []
+        return None
 
-    first_part = (instr.bit_mask & instr.bit_id) | (sub & (0xFF ^ instr.bit_id))
+    instr_bits = (instr.bit_mask & instr.bit_id) | (sub_bits & (0xFF ^ instr.bit_id))
 
     data = match.group("data")
     
     if data:
-        second_part = parse_literal(data)
-        if second_part is None:
+        data_bits = parse_literal(data)
+        if data_bits is None:
             # Malformed data
             # error handling
-            return []
-        return [first_part, second_part]
+            return None
+        return (instr_bits, data_bits)
     else:
-        return [first_part]
+        return (instr_bits, 0x00)
     
 
 
