@@ -11,9 +11,9 @@ wreg[CRA]
 rreg[AOC]
 ```
 What is going on:
-1.
-2.
-3.
+1. Load the literal value 2 to both ALU input registers (A and B)
+2. Tell the ALU to perform the addition operation on its inputs
+3. Write the result of the addition operation to Cache Register A
 
 Things to keep in mind:
-* 
+* The AIA and AIB registers can not be read from, and the AOR can not be written to.
