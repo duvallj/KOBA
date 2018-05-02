@@ -1,8 +1,12 @@
 from instructions import instructions
 import re
 
-class MalformedDataError(Exception):
-    pass
+class MalformedDataError(Exception): pass
+
+class MalformedLineError(MalformedDataError): pass
+class MalformedLiteralError(MalformedDataError): pass
+class MalformedInstructionError(MalformedDataError): pass
+    
 
 def parse_literal(lit):
     value = 0
@@ -19,37 +23,40 @@ def parse_literal(lit):
     elif lit[0] == "b":
         value = int(lit[1:], 2)
     elif lit == "*":
-        value = 0b00000000
+        value = 0xff
     else:
+        raise MalformedLiteralError("{} is not a valid literal".format(lit))
         return None
 
     return value & 0xFF
 
 line_regex = re.compile("(?P<opcode>[a-zA-Z_\.]+)(\[(?P<subcode>[a-zA-Z_\.0-9]+)\])?\s*(?P<data>[0-9a-fA-F\-\+@x]+)?")
+comment_regex = re.compile("^(\s)*;")
 
 def parse_line(line):
     # Strip all leading and trailing whitespace
     line = line.strip()
+    if line is None or re.match(comment_regex, line):
+        # is ok, just an empty line
+        return None
+    
     match = re.match(line_regex, line)
 
     if match is None:
-        # The line is not valid
-        # TODO: non-silent error handling
+        raise MalformedLineError("{} is not a valid line".format(line))
         return None
     
     instr = instructions.get(match.group("opcode"), None)
     if instr is None:
-        # There is not an instruction with that opcode
-        # Also do error handling here
+        raise MalformedInstructionError("{} is not a valid instruction".format(instr))
         return None
 
     # Fancy trick to return 0 if it doesn't need a subcode,
     # but None if does and the subcode isn't included/is malformed
     subcode = match.group("subcode")
     sub_bits = len(instr.bit_mapping) and subcode and instr.bit_mapping.get(subcode, None)
-    if sub is None:
-        # Also a malformed instruction
-        # need to do error handling like before
+    if sub_bits is None:
+        raise MalformedInstructionError("{} is not a valid subinstruction for {}".format(sub_bits, instr))
         return None
 
     instr_bits = (instr.bit_mask & instr.bit_id) | (sub_bits & (0xFF ^ instr.bit_id))
@@ -59,12 +66,11 @@ def parse_line(line):
     if data:
         data_bits = parse_literal(data)
         if data_bits is None:
-            # Malformed data
-            # error handling
+            raise MalformedDataError("??????")
             return None
         return (instr_bits, data_bits)
     else:
-        return (instr_bits, 0x00)
+        return (instr_bits, 0xff)
     
 
 
