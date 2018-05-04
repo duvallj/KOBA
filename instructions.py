@@ -25,53 +25,68 @@ p(2) = add arguments
 m(2) = subtract 2nd argument from the 1st
 """
 
-alu_l = Instruction(
-    opcode   = "logic",
-    bit_mask = 0b11110000,
-    bit_id   = 0b00010000,
+"""
+in addition to the operation (S0 - S3), 
+each ALU instruction has a logic/math select and carry hi/lo select
+
+   l.XX = logic
+ m.c.XX = math, with carry input
+m.nc.XX = math, without carry input
+
+bits:        1  0  1  0  1  0
+             ^  ^  \_________\
+            /    \        \
+           /      \        operator bits (S0-S3)
+          /        \
+Logic(0=math)     Carry(carry is active low)
+"""
+
+alu = Instruction(
+    opcode   = "alu",
+    bit_mask = 0b01000000,
+    bit_id   = 0b11000000,
     bit_mapping = {
-        'ia':       0b0000,
-        'oiaib':    0b0001,
-        'niab':     0b0010,
-        '0':        0b0011,
-        'niaib':    0b0100,
-        'ib':       0b0101,
-        'xab':      0b0110,
-        'naib':     0b0111,
-        'oiab':     0b1000,
-        'xiaib':    0b1001,
-        'b':        0b1010,
-        'nab':      0b1011,
-        '1':        0b1100,
-        'oaib':     0b1101,
-        'oab':      0b1110,
-        'a':        0b1111,
+        'l.ia':          0b100000,
+        'l.oiaib':       0b100001,
+        'l.niab':        0b100010,
+        'l.0':           0b100011,
+        'l.niaib':       0b100100,
+        'l.ib':          0b100101,
+        'l.xab':         0b100110,
+        'l.naib':        0b100111,
+        'l.oiab':        0b101000,
+        'l.xiaib':       0b101001,
+        'l.b':           0b101010,
+        'l.nab':         0b101011,
+        'l.1':           0b101100,
+        'l.oaib':        0b101101,
+        'l.oab':         0b101110,
+        'l.a':           0b101111,
+        'm.c.panaib':    0b000100,
+        'm.c.poabnabi':  0b000101,
+        'm.c.mamb1':     0b000110,
+        'm.c.mnab1':     0b000111,
+        'm.c.panab':     0b001000,
+        'm.c.pab':       0b001001,
+        'm.c.poabinab':  0b001010,
+        'm.c.paa':       0b001100,
+        'm.c.poaba':     0b001101,
+        'm.c.poaiba':    0b001110,
+        'm.c.ma1':       0b001111,
+        'm.nc.panaib':   0b010100,
+        'm.nc.poabnabi': 0b010101,
+        'm.nc.mamb1':    0b010110,
+        'm.nc.mnab1':    0b010111,
+        'm.nc.panab':    0b011000,
+        'm.nc.pab':      0b011001,
+        'm.nc.poabinab': 0b011010,
+        'm.nc.paa':      0b011100,
+        'm.nc.poaba':    0b011101,
+        'm.nc.poaiba':   0b011110,
+        'm.nc.ma1':      0b011111,
     }
 )
 
-alu_math = Instruction(
-    opcode   = "math",
-    bit_mask = 0b11110000,
-    bit_id   = 0b00000000,
-    bit_mapping = {
-        'UNUSED_1': 0b0000,
-        'UNUSED_2': 0b0001,
-        'UNUSED_3': 0b0010,
-        'UNUSED_4': 0b0011,
-        'panaib':   0b0100,
-        'poabnabi': 0b0101,
-        'mamb1':    0b0110,
-        'mnab1':    0b0111,
-        'panab':    0b1000,
-        'pab':      0b1001,
-        'poabinab': 0b1010,
-        'UNUSED_5': 0b1011,
-        'paa':      0b1100,
-        'poaba':    0b1101,
-        'poaiba':   0b1110,
-        'ma1':      0b1111,
-    }
-)
 """                  Registers!
 Code    |   Name            |   (R)ead/(W)rite/(B)oth       |   Number
 --------|-------------------|-------------------------------|--------------
@@ -96,7 +111,7 @@ BLCK    | Blockchain Reg    |               B               |  15 / 0b1111
 read_reg = Instruction(
     opcode   = "rreg",
     bit_mask = 0b11110000,
-    bit_id   = 0b01000000,
+    bit_id   = 0b00000000,
     bit_mapping = {
         'AIA':  0b0000,
         'AIB':  0b0001,
@@ -141,8 +156,8 @@ write_reg = Instruction(
     }
 )
 
-# color     row     column
-# g / r     0 - 15  0 - 1
+# color     row     
+# g / r     0 - F
 write_disp = Instruction(
     opcode   = "disp",
     bit_mask = 0b11100000,
@@ -186,35 +201,49 @@ write_disp = Instruction(
 read_address = Instruction(
     opcode   = "radr",
     bit_mask = 0b11111111,
-    bit_id   = 0b00111111,
+    bit_id   = 0b00011000,
     bit_mapping = {}
 )
 
 write_address = Instruction(
     opcode   = "wadr",
     bit_mask = 0b11111111,
-    bit_id   = 0b10111111,
+    bit_id   = 0b10011001,
     bit_mapping = {}
 )
 
 jump_unconditional = Instruction(
     opcode   = "jmp",
     bit_mask = 0b11111111,
-    bit_id   = 0b00101001,
+    bit_id   = 0b00100001,
     bit_mapping = {}
 )
 
 jump_if_equal = Instruction(
     opcode   = "jie",
     bit_mask = 0b11111111,
-    bit_id   = 0b00101010,
+    bit_id   = 0b00100010,
     bit_mapping = {}
 )
 
-jump_if_less = Instruction(
-    opcode   = "jin",
+jump_if_not_equal = Instruction(
+    opcode   = "jine",
     bit_mask = 0b11111111,
-    bit_id   = 0b00101100,
+    bit_id   = 0b00100100,
+    bit_mapping = {}
+)
+
+jump_if_carry = Instruction(
+    opcode   = "jic",
+    bit_mask = 0b11111111,
+    bit_id   = 0b00101000,
+    bit_mapping = {}
+)
+
+jump_if_not_carry = Instruction(
+    opcode   = "jinc",
+    bit_mask = 0b11111111,
+    bit_id   = 0b00110000,
     bit_mapping = {}
 )
 
@@ -228,5 +257,7 @@ instructions = {
     write_address.opcode : write_address,
     jump_unconditional.opcode : jump_unconditional,
     jump_if_equal.opcode : jump_if_equal,
-    jump_if_less.opcode : jump_if_less,
+    jump_if_not_equal.opcode : jump_if_not_equal,
+    jump_if_carry.opcode : jump_if_carry,
+    jump_if_not_carry.opcode : jump_if_not_carry,
 }
