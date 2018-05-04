@@ -248,8 +248,7 @@ jump_if_not_carry = Instruction(
 )
 
 instructions = {
-    alu_l.opcode : alu_l,
-    alu_math.opcode : alu_math,
+    alu.opcode : alu,
     read_reg.opcode : read_reg,
     write_reg.opcode : write_reg,
     write_disp.opcode : write_disp,
